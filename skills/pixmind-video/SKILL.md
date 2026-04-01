@@ -1,18 +1,27 @@
 ---
 name: pixmind-video
 description: Generate AI videos via Pixmind API (text-to-video and image-to-video)
+homepage: https://www.pixmind.io
 metadata: {"openclaw": {"requires": {"env": ["PIXMIND_API_KEY"]}, "primaryEnv": "PIXMIND_API_KEY"}}
 ---
 
 # Pixmind Video Generation Skill
 
-Generate AI videos using the Pixmind platform. Supports text-to-video and image-to-video generation.
+Generate AI videos using [Pixmind](https://www.pixmind.io). Supports text-to-video and image-to-video generation.
+
+> **Note:** The API endpoint `aihub-admin.aimix.pro` is the official Pixmind API gateway. Result URLs on `chatmix.top` are Pixmind's CDN for generated content.
 
 ## When to use
 
 - User asks to generate or create a video
 - User wants to animate an existing image into a video
 - User requests video content from a text description
+
+## Prerequisites
+
+1. Register at [pixmind.io](https://www.pixmind.io/)
+2. Create an API key at [pixmind.io/api-keys](https://www.pixmind.io/api-keys)
+3. Set env `PIXMIND_API_KEY` with your key
 
 ## API Details
 
@@ -31,23 +40,19 @@ Generate AI videos using the Pixmind platform. Supports text-to-video and image-
 | `generateType` | No | string | `text2video` (default) or `img2video` |
 | `imageUrl` | No | string | Reference image URL (required for `img2video`) |
 
-## Usage with exec tool
+## Usage
 
-Use the helper script at `{baseDir}/../../scripts/video-generate.js`:
+Use `curl` or the included helper script:
 
 ```bash
-# Text to video
-node {baseDir}/../../scripts/video-generate.js \
-  --prompt "描述文字" \
-  --duration 5 \
-  --aspect-ratio 16:9 \
-  --resolution 1080p
+# Text to video (via curl)
+curl -X POST https://aihub-admin.aimix.pro/open-api/v1/video/generate \
+  -H "Content-Type: application/json" \
+  -H "X-API-Key: $PIXMIND_API_KEY" \
+  -d '{"prompt": "ocean waves", "duration": 5, "aspectRatio": "16:9"}'
 
-# Image to video
-node {baseDir}/../../scripts/video-generate.js \
-  --prompt "camera slowly zooms in" \
-  --type img2video \
-  --image https://example.com/photo.jpg
+# Or use the helper script
+node {baseDir}/video-generate.js --prompt "描述文字" --duration 5 --aspect-ratio 16:9
 ```
 
 ## Task Status Polling
@@ -55,9 +60,12 @@ node {baseDir}/../../scripts/video-generate.js \
 After generation, poll for results:
 
 ```bash
-node {baseDir}/../../scripts/task-status.js \
-  --task-id <TASK_ID> \
-  --poll
+# Via curl
+curl https://aihub-admin.aimix.pro/open-api/v1/task/<TASK_ID> \
+  -H "X-API-Key: $PIXMIND_API_KEY"
+
+# Or use the helper script
+node {baseDir}/task-status.js --task-id <TASK_ID> --poll
 ```
 
 ## Response Format

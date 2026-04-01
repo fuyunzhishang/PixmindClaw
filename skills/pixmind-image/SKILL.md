@@ -1,18 +1,27 @@
 ---
 name: pixmind-image
 description: Generate or edit AI images via Pixmind API (text-to-image and image-to-image)
+homepage: https://www.pixmind.io
 metadata: {"openclaw": {"requires": {"env": ["PIXMIND_API_KEY"]}, "primaryEnv": "PIXMIND_API_KEY"}}
 ---
 
 # Pixmind Image Generation Skill
 
-Generate AI images using the Pixmind platform. Supports text-to-image and image-to-image generation with multiple models.
+Generate AI images using [Pixmind](https://www.pixmind.io). Supports text-to-image and image-to-image generation with multiple models.
+
+> **Note:** The API endpoint `aihub-admin.aimix.pro` is the official Pixmind API gateway. Result URLs on `chatmix.top` are Pixmind's CDN for generated content.
 
 ## When to use
 
 - User asks to generate, create, or draw an image
 - User wants to transform or edit an existing image
 - User requests image variations or upscaling
+
+## Prerequisites
+
+1. Register at [pixmind.io](https://www.pixmind.io/)
+2. Create an API key at [pixmind.io/api-keys](https://www.pixmind.io/api-keys)
+3. Set env `PIXMIND_API_KEY` with your key
 
 ## API Details
 
@@ -42,28 +51,19 @@ Generate AI images using the Pixmind platform. Supports text-to-image and image-
 - `seedream-3.0-t2i` — Seedream 3.0 text-to-image
 - `seededit-3.0-i2i` — Seedream 3.0 image editing
 
-## Usage with exec tool
+## Usage
 
-Use the helper script at `{baseDir}/../../scripts/image-generate.js`:
+Use `curl` or the included helper script:
 
 ```bash
-# Text to image
-node {baseDir}/../../scripts/image-generate.js \
-  --prompt "描述文字" \
-  --model seedream-4.0 \
-  --aspect-ratio 16:9 \
-  --count 1
+# Text to image (via curl)
+curl -X POST https://aihub-admin.aimix.pro/open-api/v1/image/generate \
+  -H "Content-Type: application/json" \
+  -H "X-API-Key: $PIXMIND_API_KEY" \
+  -d '{"prompt": "描述文字", "model": "seedream-4.0", "aspectRatio": "16:9"}'
 
-# Image to image
-node {baseDir}/../../scripts/image-generate.js \
-  --prompt "transform description" \
-  --type img2img \
-  --image https://example.com/photo.jpg
-
-# With prompt enhancement
-node {baseDir}/../../scripts/image-generate.js \
-  --prompt "a sunset over mountains" \
-  --enhance
+# Or use the helper script
+node {baseDir}/pixmind-api.js --prompt "描述文字" --model seedream-4.0 --aspect-ratio 16:9
 ```
 
 ## Task Status Polling
@@ -71,9 +71,12 @@ node {baseDir}/../../scripts/image-generate.js \
 After generation, poll for results:
 
 ```bash
-node {baseDir}/../../scripts/task-status.js \
-  --task-id <TASK_ID> \
-  --poll
+# Via curl
+curl https://aihub-admin.aimix.pro/open-api/v1/task/<TASK_ID> \
+  -H "X-API-Key: $PIXMIND_API_KEY"
+
+# Or use the helper script
+node {baseDir}/task-status.js --task-id <TASK_ID> --poll
 ```
 
 ## Response Format
@@ -91,9 +94,7 @@ Task status response:
     "taskId": 19399,
     "status": "ready",
     "progress": 100,
-    "images": ["https://chatmix.top/..."],
-    "videoUrl": null,
-    "coverUrl": null
+    "images": ["https://chatmix.top/..."]
   }
 }
 ```
