@@ -1,4 +1,4 @@
-import { pixmindFetch } from './pixmind-api.js';
+const API_BASE = 'https://aihub-admin.aimix.pro';
 
 const args = process.argv.slice(2);
 
@@ -36,11 +36,20 @@ if (!opts.taskId) {
   process.exit(1);
 }
 
+const apiKey = process.env.PIXMIND_API_KEY;
+if (!apiKey) {
+  console.error('Error: PIXMIND_API_KEY not set. Get one at https://www.pixmind.io/api-keys');
+  process.exit(1);
+}
+
 const poll = opts.poll;
 const interval = parseInt(opts.interval) || 3000;
 
 async function checkStatus() {
-  return pixmindFetch(`/open-api/v1/task/${opts.taskId}`);
+  const res = await fetch(`${API_BASE}/open-api/v1/task/${opts.taskId}`, {
+    headers: { 'X-API-Key': apiKey },
+  });
+  return res.json();
 }
 
 async function pollStatus() {

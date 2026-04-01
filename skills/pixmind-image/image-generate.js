@@ -1,4 +1,4 @@
-import { pixmindFetch, APP_KEY, API_BASE } from './pixmind-api.js';
+const API_BASE = 'https://aihub-admin.aimix.pro';
 
 const args = process.argv.slice(2);
 
@@ -6,7 +6,7 @@ if (args.length === 0 || args.includes('--help')) {
   console.log(`
 Usage: node image-generate.js <options>
 
-Options (via CLI args or defaults):
+Options:
   --prompt <text>        (required) Image generation prompt
   --model <name>         Model name (default: seedream-4.0)
   --aspect-ratio <ratio> Aspect ratio like 16:9, 1:1 (default: 1:1)
@@ -18,7 +18,6 @@ Options (via CLI args or defaults):
 Examples:
   node image-generate.js --prompt "a cute cat"
   node image-generate.js --prompt "oil painting" --model imagen-4-ultra --aspect-ratio 16:9 --count 2
-  node image-generate.js --prompt "make it snowy" --type img2img --image https://example.com/img.jpg
 `);
   process.exit(0);
 }
@@ -45,6 +44,12 @@ if (!opts.prompt) {
   process.exit(1);
 }
 
+const apiKey = process.env.PIXMIND_API_KEY;
+if (!apiKey) {
+  console.error('Error: PIXMIND_API_KEY not set. Get one at https://www.pixmind.io/api-keys');
+  process.exit(1);
+}
+
 const body = {
   prompt: opts.prompt,
   model: opts.model || 'seedream-4.0',
@@ -60,5 +65,10 @@ console.log('Generating image...');
 console.log('Prompt:', body.prompt);
 console.log('Model:', body.model);
 
-const result = await pixmindFetch('/open-api/v1/image/generate', body);
+const res = await fetch(`${API_BASE}/open-api/v1/image/generate`, {
+  method: 'POST',
+  headers: { 'Content-Type': 'application/json', 'X-API-Key': apiKey },
+  body: JSON.stringify(body),
+});
+const result = await res.json();
 console.log('\nResult:', JSON.stringify(result, null, 2));
