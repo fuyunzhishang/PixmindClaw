@@ -42,14 +42,49 @@ Generate AI images using [Pixmind](https://www.pixmind.io). Supports text-to-ima
 
 ### Available Models
 
-- `seedream-4.0` — Default, high quality
-- `imagen-4-standard` — Google Imagen 4 standard
-- `imagen-4-ultra` — Google Imagen 4 ultra (highest quality)
-- `imagen-4-fast` — Google Imagen 4 fast
-- `gemini-2.5-flash` — Gemini flash model
-- `gemini-3-pro-image` — Gemini Pro image model
-- `seedream-3.0-t2i` — Seedream 3.0 text-to-image
-- `seededit-3.0-i2i` — Seedream 3.0 image editing
+**Seedream (ByteDance)**
+- `seedream-4.5` — Latest flagship model. Unified architecture for generation and editing, cinematic aesthetics, realistic textures, native 4K support (4096x4096). LM Arena Top 10.
+- `seedream-4.0` — High quality generation model, good balance of quality and speed. Default model.
+
+**Google Imagen**
+- `imagen-4-ultra` — Highest quality Imagen 4 variant, best for photorealistic outputs.
+- `imagen-4-standard` — Standard quality Imagen 4, good balance.
+- `imagen-4-fast` — Fastest Imagen 4 variant, optimized for speed.
+
+**OpenAI**
+- `gpt-image-2` — Latest GPT image model, strong instruction following and text rendering in images.
+- `gpt-image-2-eco` — Cost-effective variant of GPT Image 2.
+- `gpt-image-4o` — GPT-4o powered image generation.
+- `gpt-image-1.5` — Earlier GPT image model.
+
+**Midjourney**
+- `mj-v7` — Latest Midjourney v7, top artistic quality and aesthetic.
+- `mj-v6.1` — Midjourney v6.1, excellent for creative and artistic images.
+- `mj-v6` — Midjourney v6, strong composition and lighting.
+- `mj-niji6` — Midjourney Niji 6, specialized for anime and illustration styles.
+
+**Alibaba / Qwen**
+- `qwen-image-max` — Qwen VL image generation, highest quality variant.
+- `qwen-image-plus` — Qwen VL image generation, balanced quality and speed.
+- `qwen-image-edit-max` — Qwen image editing model, max quality for img2img tasks.
+- `qwen-image-edit-plus` — Qwen image editing model, balanced variant.
+- `wan2.6-image` — Wan 2.6 image generation, Alibaba's diffusion model.
+- `wanx2.1-imageedit` — Wanx 2.1 image editing, specialized for image-to-image tasks.
+
+**Flux (Black Forest Labs)**
+- `flux-kontext-max` — Flux Kontext max quality, strong prompt adherence and visual fidelity.
+- `flux-kontext-pro` — Flux Kontext pro, balanced quality and generation speed.
+
+**Nano Banana**
+- `nano-banana-2` — Latest Nano Banana 2, lightweight but capable.
+- `nano-banana-2-eco` — Nano Banana 2 economy variant, lowest cost.
+- `nano-banana-pro` — Nano Banana Pro, higher quality variant.
+- `nano-banana-pro-lite` — Nano Banana Pro lite, lighter-weight pro version.
+- `nano-banana` — Base Nano Banana model.
+
+**Other**
+- `pixmind-2.0` — Pixmind's proprietary image model.
+- `z-image` — Alibaba Tongyi Lab's 6B-parameter efficient diffusion transformer (S3-DiT), open-source, photorealistic quality with low computational cost.
 
 ## Usage
 
@@ -63,7 +98,7 @@ curl -X POST https://aihub-admin.aimix.pro/open-api/v1/image/generate \
   -d '{"prompt": "描述文字", "model": "seedream-4.0", "aspectRatio": "16:9"}'
 
 # Or use the helper script
-node {baseDir}/pixmind-api.js --prompt "描述文字" --model seedream-4.0 --aspect-ratio 16:9
+node {baseDir}/image-generate.js --prompt "描述文字" --model seedream-4.0 --aspect-ratio 16:9
 ```
 
 ## Task Status Polling
