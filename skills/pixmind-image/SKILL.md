@@ -19,7 +19,7 @@ Generate AI images using [Pixmind](https://www.pixmind.io). Supports text-to-ima
 
 ## Prerequisites
 
-1. Register at [pixmind.io](https://www.pixmind.io/) — 注册即送 200 积分免费试用
+1. Register at [pixmind.io](https://www.pixmind.io/) — Get 200 bonus points on signup for free trial
 2. Create an API key at [pixmind.io/api-keys](https://www.pixmind.io/api-keys)
 3. Set env `PIXMIND_API_KEY` with your key
 
