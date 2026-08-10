@@ -5,7 +5,7 @@ OpenClaw skills for AI image and video generation via [Pixmind](https://www.pixm
 ## Prerequisites
 
 1. Register at [pixmind.io](https://www.pixmind.io/)
-2. Go to [pixmind.io/api-keys](https://www.pixmind.io/api-keys) and click **+ Create API Key**
+2. Open the [API Platform key dashboard](https://www.pixmind.io/api-platform/dashboard/keys) and click **+ Create API Key**
 
 ![Create API Key](api-keys.png)
 
@@ -14,17 +14,32 @@ OpenClaw skills for AI image and video generation via [Pixmind](https://www.pixm
 ```bash
 clawhub install pixmind-image
 clawhub install pixmind-video
+clawhub install pixmind-image-compress
 ```
 
 ## Configure
 
-Create a `.env` file in your project root:
+Set the API key in your environment (OpenClaw also injects it from the skill configuration):
 
-```
-PIXMIND_API_KEY=your_api_key_here
+```bash
+export PIXMIND_API_KEY=your_api_key_here
 ```
 
 That's it. The skill will auto-load the key on use.
+
+## API Platform
+
+All skills use the production API Platform gateway with Bearer authentication:
+
+| Purpose | Endpoint |
+| --- | --- |
+| Models | `GET /api-platform/v1/models` |
+| Pricing | `GET /api-platform/v1/pricing` |
+| Image/video generation | `POST /api-platform/v1/generations` |
+| Task status | `GET /api-platform/v1/tasks/{taskId}` |
+| Image compression | `POST /api-platform/v1/image/compress` |
+
+Base URL: `https://aihub-admin.aimix.pro`. Send `Authorization: Bearer $PIXMIND_API_KEY` on every request.
 
 ## Skills
 
@@ -89,6 +104,14 @@ Output on completion:
 
 - **Image:** `data.images` — array of image URLs
 - **Video:** `data.videoUrl` — video URL, `data.coverUrl` — cover image URL
+
+### pixmind-image-compress — Image Compression
+
+Compress, resize, and convert local files or remote images:
+
+```bash
+node skills/pixmind-image-compress/compress.js --file photo.png --preset web
+```
 
 ## License
 

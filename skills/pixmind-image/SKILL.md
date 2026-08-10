@@ -1,7 +1,6 @@
 ---
 name: pixmind-image
 description: Generate or edit AI images via Pixmind API (text-to-image and image-to-image)
-homepage: https://www.pixmind.io
 metadata: {"openclaw": {"requires": {"env": ["PIXMIND_API_KEY"]}, "primaryEnv": "PIXMIND_API_KEY"}}
 ---
 
@@ -20,18 +19,19 @@ Generate AI images using [Pixmind](https://www.pixmind.io). Supports text-to-ima
 ## Prerequisites
 
 1. Register at [pixmind.io](https://www.pixmind.io/) — Get 200 bonus points on signup for free trial
-2. Create an API key at [pixmind.io/api-keys](https://www.pixmind.io/api-keys)
+2. Create an API key in the [API Platform dashboard](https://www.pixmind.io/api-platform/dashboard/keys)
 3. Set env `PIXMIND_API_KEY` with your key
 
 ## API Details
 
-**Endpoint**: `POST https://aihub-admin.aimix.pro/open-api/v1/image/generate`
-**Auth**: Header `X-API-Key: {API_KEY}` (from env `PIXMIND_API_KEY`)
+**Endpoint**: `POST https://aihub-admin.aimix.pro/api-platform/v1/generations`
+**Auth**: Header `Authorization: Bearer {API_KEY}` (from env `PIXMIND_API_KEY`)
 
 ## Request Body (JSON)
 
 | Parameter | Required | Type | Description |
 |-----------|----------|------|-------------|
+| `type` | Yes | string | Fixed value: `image` |
 | `prompt` | Yes | string | Image description / prompt (max 20000 chars) |
 | `model` | No | string | Model ID (default: `seedream-4.0`) |
 | `aspectRatio` | No | string | Aspect ratio, e.g. `1:1`, `16:9`, `9:16` (varies by model, default: `1:1`) |
@@ -49,7 +49,7 @@ Generate AI images using [Pixmind](https://www.pixmind.io). Supports text-to-ima
 
 ### Available Models
 
-Model list verified against the live API (`POST /open-api/v1/image/generate`, 2026-07-15). Sending an unsupported model returns the full supported list in the error message.
+Fetch the current model catalog from `GET /api-platform/v1/models`. The list below was verified against the API Platform generation service on 2026-08-10.
 
 | Model ID | Name | Notes |
 |----------|------|-------|
@@ -128,10 +128,10 @@ Use `curl` or the included helper script:
 
 ```bash
 # Text to image (via curl)
-curl -X POST https://aihub-admin.aimix.pro/open-api/v1/image/generate \
+curl -X POST https://aihub-admin.aimix.pro/api-platform/v1/generations \
   -H "Content-Type: application/json" \
-  -H "X-API-Key: $PIXMIND_API_KEY" \
-  -d '{"prompt": "描述文字", "model": "nano-banana-2", "aspectRatio": "16:9"}'
+  -H "Authorization: Bearer $PIXMIND_API_KEY" \
+  -d '{"type": "image", "prompt": "描述文字", "model": "nano-banana-2", "aspectRatio": "16:9"}'
 
 # Or use the helper script
 node {baseDir}/image-generate.js --prompt "描述文字" --model nano-banana-2 --aspect-ratio 16:9
@@ -143,8 +143,8 @@ After generation, poll for results:
 
 ```bash
 # Via curl
-curl https://aihub-admin.aimix.pro/open-api/v1/task/<TASK_ID> \
-  -H "X-API-Key: $PIXMIND_API_KEY"
+curl https://aihub-admin.aimix.pro/api-platform/v1/tasks/<TASK_ID> \
+  -H "Authorization: Bearer $PIXMIND_API_KEY"
 
 # Or use the helper script
 node {baseDir}/task-status.js --task-id <TASK_ID> --poll

@@ -1,7 +1,6 @@
 ---
 name: pixmind-video
 description: Generate AI videos via Pixmind API (text-to-video and image-to-video)
-homepage: https://www.pixmind.io
 metadata: {"openclaw": {"requires": {"env": ["PIXMIND_API_KEY"]}, "primaryEnv": "PIXMIND_API_KEY"}}
 ---
 
@@ -20,18 +19,19 @@ Generate AI videos using [Pixmind](https://www.pixmind.io). Supports text-to-vid
 ## Prerequisites
 
 1. Register at [pixmind.io](https://www.pixmind.io/) — 注册即送 200 积分免费试用
-2. Create an API key at [pixmind.io/api-keys](https://www.pixmind.io/api-keys)
+2. Create an API key in the [API Platform dashboard](https://www.pixmind.io/api-platform/dashboard/keys)
 3. Set env `PIXMIND_API_KEY` with your key
 
 ## API Details
 
-**Endpoint**: `POST https://aihub-admin.aimix.pro/open-api/v1/video/generate`
-**Auth**: Header `X-API-Key: {API_KEY}` (from env `PIXMIND_API_KEY`)
+**Endpoint**: `POST https://aihub-admin.aimix.pro/api-platform/v1/generations`
+**Auth**: Header `Authorization: Bearer {API_KEY}` (from env `PIXMIND_API_KEY`)
 
 ## Request Body (JSON)
 
 | Parameter | Required | Type | Description |
 |-----------|----------|------|-------------|
+| `type` | Yes | string | Fixed value: `video` |
 | `prompt` | Yes | string | Video description / prompt |
 | `model` | No | string | Model ID (default: `seedance-2.0-pro`) |
 | `duration` | No | number | Video duration in seconds (allowed values vary by model) |
@@ -42,7 +42,7 @@ Generate AI videos using [Pixmind](https://www.pixmind.io). Supports text-to-vid
 
 ### Available Models
 
-Model list verified against the live API (`POST /open-api/v1/video/generate`, 2026-07-15). Only models that pass Pixmind's validation layer are listed — sending an unsupported slug returns `code: 400, 不支持的模型`.
+Fetch the current model catalog from `GET /api-platform/v1/models`. The list below was verified against the API Platform generation service on 2026-08-10.
 
 | Model ID | Text-to-Video | Image-to-Video | Aspect Ratios | Duration (s) | Resolution | Notes |
 |----------|:---:|:---:|---------------|--------------|------------|-------|
@@ -102,22 +102,22 @@ Use `curl` or the included helper script:
 
 ```bash
 # Text to video (via curl) — Seedance requires resolution
-curl -X POST https://aihub-admin.aimix.pro/open-api/v1/video/generate \
+curl -X POST https://aihub-admin.aimix.pro/api-platform/v1/generations \
   -H "Content-Type: application/json" \
-  -H "X-API-Key: $PIXMIND_API_KEY" \
-  -d '{"prompt": "ocean waves", "model": "seedance-2.0-pro", "duration": 5, "resolution": "1080p", "aspectRatio": "16:9"}'
+  -H "Authorization: Bearer $PIXMIND_API_KEY" \
+  -d '{"type": "video", "prompt": "ocean waves", "model": "seedance-2.0-pro", "duration": 5, "resolution": "1080p", "aspectRatio": "16:9"}'
 
 # Sora 2 — duration MUST be 4, 8, or 12
-curl -X POST https://aihub-admin.aimix.pro/open-api/v1/video/generate \
+curl -X POST https://aihub-admin.aimix.pro/api-platform/v1/generations \
   -H "Content-Type: application/json" \
-  -H "X-API-Key: $PIXMIND_API_KEY" \
-  -d '{"prompt": "city night drive", "model": "sora-2", "duration": 8, "aspectRatio": "16:9"}'
+  -H "Authorization: Bearer $PIXMIND_API_KEY" \
+  -d '{"type": "video", "prompt": "city night drive", "model": "sora-2", "duration": 8, "aspectRatio": "16:9"}'
 
 # Veo 3.1 — only 16:9 or 9:16
-curl -X POST https://aihub-admin.aimix.pro/open-api/v1/video/generate \
+curl -X POST https://aihub-admin.aimix.pro/api-platform/v1/generations \
   -H "Content-Type: application/json" \
-  -H "X-API-Key: $PIXMIND_API_KEY" \
-  -d '{"prompt": "timelapse", "model": "veo-3.1", "duration": 8, "aspectRatio": "16:9"}'
+  -H "Authorization: Bearer $PIXMIND_API_KEY" \
+  -d '{"type": "video", "prompt": "timelapse", "model": "veo-3.1", "duration": 8, "aspectRatio": "16:9"}'
 
 # Or use the helper script
 node {baseDir}/video-generate.js --prompt "描述文字" --model seedance-2.0-pro --duration 5 --resolution 1080p
@@ -129,8 +129,8 @@ After generation, poll for results:
 
 ```bash
 # Via curl
-curl https://aihub-admin.aimix.pro/open-api/v1/task/<TASK_ID> \
-  -H "X-API-Key: $PIXMIND_API_KEY"
+curl https://aihub-admin.aimix.pro/api-platform/v1/tasks/<TASK_ID> \
+  -H "Authorization: Bearer $PIXMIND_API_KEY"
 
 # Or use the helper script
 node {baseDir}/task-status.js --task-id <TASK_ID> --poll

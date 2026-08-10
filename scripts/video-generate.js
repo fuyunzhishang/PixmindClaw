@@ -43,6 +43,7 @@ if (!opts.prompt) {
 }
 
 const body = {
+  type: 'video',
   prompt: opts.prompt,
   generateType: opts.type || 'text2video',
 };
@@ -57,5 +58,5 @@ console.log('Generating video...');
 console.log('Prompt:', body.prompt);
 if (body.model) console.log('Model:', body.model);
 
-const result = await pixmindFetch('/open-api/v1/video/generate', body);
+const result = await pixmindFetch('/api-platform/v1/generations', body);
 console.log('\nResult:', JSON.stringify(result, null, 2));

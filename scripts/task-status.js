@@ -40,7 +40,7 @@ const poll = opts.poll;
 const interval = parseInt(opts.interval) || 3000;
 
 async function checkStatus() {
-  return pixmindFetch(`/open-api/v1/task/${opts.taskId}`);
+  return pixmindFetch(`/api-platform/v1/tasks/${opts.taskId}`);
 }
 
 async function pollStatus() {

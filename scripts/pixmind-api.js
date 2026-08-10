@@ -24,9 +24,8 @@ function loadEnv() {
 
 loadEnv();
 
-export const APP_KEY = process.env.PIXMIND_APP_KEY || 'app_7867c26ab713fb03aec0774ed28f5802';
 export const API_KEY = process.env.PIXMIND_API_KEY;
-export const API_BASE = (process.env.PIXMIND_API_BASE || 'http://127.0.0.1:8001').replace(/\/+$/, '');
+export const API_BASE = (process.env.PIXMIND_API_BASE || 'https://aihub-admin.aimix.pro').replace(/\/+$/, '');
 
 export async function pixmindFetch(path, body = null) {
   if (!API_KEY) {
@@ -37,8 +36,7 @@ export async function pixmindFetch(path, body = null) {
   const url = `${API_BASE}${path}`;
   const headers = {
     'Content-Type': 'application/json',
-    'X-App-Key': APP_KEY,
-    'X-API-Key': API_KEY,
+    'Authorization': `Bearer ${API_KEY}`,
   };
 
   const opts = { method: body ? 'POST' : 'GET', headers };

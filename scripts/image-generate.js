@@ -1,4 +1,4 @@
-import { pixmindFetch, APP_KEY, API_BASE } from './pixmind-api.js';
+import { pixmindFetch } from './pixmind-api.js';
 
 const args = process.argv.slice(2);
 
@@ -46,6 +46,7 @@ if (!opts.prompt) {
 }
 
 const body = {
+  type: 'image',
   prompt: opts.prompt,
   model: opts.model || 'seedream-4.0',
   aspectRatio: opts.aspectRatio || '1:1',
@@ -60,5 +61,5 @@ console.log('Generating image...');
 console.log('Prompt:', body.prompt);
 console.log('Model:', body.model);
 
-const result = await pixmindFetch('/open-api/v1/image/generate', body);
+const result = await pixmindFetch('/api-platform/v1/generations', body);
 console.log('\nResult:', JSON.stringify(result, null, 2));
