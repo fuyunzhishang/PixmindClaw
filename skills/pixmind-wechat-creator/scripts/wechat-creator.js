@@ -55,7 +55,8 @@ Options:
   --image-model <model>      Optional Pixmind image model override
   --cover-url <url>          Use an existing public HTTPS cover image
   --inline-image <url>       Repeatable existing public HTTPS inline image
-  --theme <theme>            pixmind-clean, pixmind-focus, pixmind-warm, pixmind-tech, or pixmind-magazine
+  --theme <theme>            classic, graphite, maple, mint, sunrise, lake, newspaper, forest, minimal, editorial, ink, warm, or techno
+  --layout <layout>          balanced, compact, airy, or magazine
   --yes                      Confirm paid content generation
 `;
 }
@@ -140,6 +141,7 @@ function presentation(project) {
       contentHtml: project.manifest?.contentHtml || '',
       coverUrl: project.manifest?.coverUrl || '',
       theme: project.manifest?.theme || '',
+      layout: project.manifest?.layout || '',
       imageCount: project.manifest?.inlineAssets?.length || article.imageBriefs?.length || 0,
       sources: article.sources || project.outline?.sources || [],
       outline: project.outline || null,
@@ -261,7 +263,8 @@ async function main() {
         render: {
           coverUrl,
           inlineAssets: suppliedInline.length ? suppliedInline : generatedInline,
-          theme: options.theme || 'pixmind-clean',
+          theme: options.theme || 'classic',
+          layout: options.layout || 'balanced',
           ...(options.sourceUrls[0] ? { sourceUrl: options.sourceUrls[0] } : {}),
           commentEnabled: options.comments !== 'false',
           onlyFansCanComment: options.onlyFansCanComment === 'true',

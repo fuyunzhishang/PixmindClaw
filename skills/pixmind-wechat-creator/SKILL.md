@@ -35,13 +35,13 @@ Read the project from `result.structuredContent`. After rendering, prefer `resul
 
 ## Workflow
 
-1. Collect the topic, target audience, goal, tone, language, target length, source URLs, user-provided materials, and preferred layout theme. Offer the five themes below; if the user does not care, use `pixmind-clean`.
+1. Collect the topic, target audience, goal, tone, language, target length, source URLs, user-provided materials, preferred theme, and layout profile. Offer the 13 themes and four layouts below; if the user does not care, use `classic` with `balanced`.
 2. Explain that outline, article, review, and optional Pixmind image generation use API credits. Obtain explicit approval before any paid call.
 3. Call `content_create_project` with a stable `clientRequestId` and a `brief` containing the collected fields. This call is not a paid generation call.
 4. Call `content_generate_outline` with `projectId`, the latest `expectedRevision`, and a stable `idempotencyKey`. Show the outline first when the user asked to approve the structure.
 5. After approval, call `content_generate_article`, then `content_review_article`. Always pass the revision returned by the preceding call and a different stable idempotency key for each operation. If review fails but `content_get_project` confirms that `article` exists, do not retry review automatically and do not stop at Markdown: retain a visible review warning and continue to the unpaid render step with the latest revision.
 6. When images are requested, call `content_generate_images`. Poll every returned task with `pixmind_api_request` using `GET /api-platform/v1/tasks/{taskId}` until ready or failed. Never resubmit a failed or unknown paid task automatically.
-7. Always call `content_render_wechat` after the article and review are ready, even when the user did not request images. This render call is not paid. Use completed image results for `render.coverUrl` and `render.inlineAssets`; otherwise pass `coverUrl: ""` and `inlineAssets: []`. Pass the selected theme exactly as `render.theme`. The Markdown article is an intermediate artifact, not the final copyable deliverable.
+7. Always call `content_render_wechat` after the article and review are ready, even when the user did not request images. This render call is not paid. Use completed image results for `render.coverUrl` and `render.inlineAssets`; otherwise pass `coverUrl: ""` and `inlineAssets: []`. Pass the selected values as `render.theme` and `render.layout`. The Markdown article is an intermediate artifact, not the final copyable deliverable.
 8. Present the rendered `document.article` result only after `manifest.contentHtml` exists. Tell the user to click **Copy to WeChat editor** and paste directly into the WeChat Official Account editor; the copied HTML contains WeChat-compatible inline styles.
 9. Do not request WeChat AppID, AppSecret, account alias, or publishing permission. This Skill does not create drafts or publish through WeChat APIs.
 
@@ -59,15 +59,30 @@ Use these MCP Tool names only:
 
 Do not call any `wechat_*` Tool. Preserve `projectId`, `revision`, and the idempotency keys throughout the conversation.
 
-## Layout themes
+## Article themes
 
-- `pixmind-clean` — 简约蓝：清爽留白和左侧标题色条，适合通用内容。
-- `pixmind-focus` — 专业绿：下划线标题和克制配色，适合教程与行业分析。
-- `pixmind-warm` — 暖橙人文：圆角标题和温暖色调，适合生活、品牌与故事内容。
-- `pixmind-tech` — 科技紫：深色标题块和高对比配色，适合 AI、数码与技术文章。
-- `pixmind-magazine` — 杂志红：上下分隔线和编辑感标题，适合观点与深度报道。
+- `classic` — 经典蓝：清晰稳妥，适合通用内容。
+- `graphite` — 石墨灰：理性克制，适合商业与行业分析。
+- `maple` — 枫糖棕：温润复古，适合品牌故事与人文内容。
+- `mint` — 薄荷绿：轻盈清新，适合生活方式与健康内容。
+- `sunrise` — 朝阳橙：明快有活力，适合活动、产品与增长内容。
+- `lake` — 湖水青：冷静现代，适合教程、知识与产品说明。
+- `newspaper` — 报刊风：黑白秩序感，适合新闻、评论与深度报道。
+- `forest` — 森林绿：自然专业，适合环保、教育与长期主义主题。
+- `minimal` — 极简白：最大化留白，适合短文、公告与高密度信息。
+- `editorial` — 编辑部：鲜明分隔与编辑感，适合观点和专题文章。
+- `ink` — 墨卡：深色标题和东方墨感，适合文化与高端内容。
+- `warm` — 暖栗色：柔和亲切，适合情感、家庭与人物故事。
+- `techno` — 技术流：高对比科技配色，适合 AI、数码与工程文章。
 
-The user may switch themes after rendering. Call `content_render_wechat` again with the latest revision and a new stable idempotency key; this does not regenerate or review the article and is not a paid generation call.
+## Layout profiles
+
+- `balanced` — 均衡版：默认字号与间距，适合大多数文章。
+- `compact` — 紧凑版：更高信息密度，适合教程、清单和长文。
+- `airy` — 舒展版：更大字号与留白，适合轻阅读和移动端阅读。
+- `magazine` — 专栏版：宋体、首行缩进与杂志式节奏，适合观点和人文内容。
+
+The user may switch theme or layout after rendering. Call `content_render_wechat` again with the latest revision and a new stable idempotency key; this does not regenerate or review the article and is not a paid generation call.
 
 ## Output and failure handling
 
