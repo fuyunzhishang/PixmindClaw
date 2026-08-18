@@ -32,7 +32,7 @@ The normal Skill workflow does not call any `wechat_*` Tool.
 - `POST /content/projects/{projectId}/article`: require an existing outline.
 - `POST /content/projects/{projectId}/review`: require an existing article.
 - `POST /content/projects/{projectId}/images`: create paid cover and inline image tasks; poll each through `/tasks/{taskId}`.
-- `POST /content/projects/{projectId}/render`: validate public image URLs and create the versioned article manifest.
+- `POST /content/projects/{projectId}/render`: create the versioned article manifest with WeChat-compatible inline styles. Images are optional; pass an empty `coverUrl` and `inlineAssets` when generating a text-only article.
 
 Every successful mutation increments `revision`. Always query the project after an interrupted or unknown request before deciding whether another paid mutation is necessary.
 

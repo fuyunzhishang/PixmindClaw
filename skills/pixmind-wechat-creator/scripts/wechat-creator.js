@@ -213,9 +213,9 @@ async function main() {
   if (!project.article) project = await mutate(project, 'article', requestId, apiKey);
   if (!project.review) project = await mutate(project, 'review', requestId, apiKey);
 
-  const wantsRender = options.withImages || options.coverUrl;
+  const wantsImages = options.withImages === true;
   let generatedImages = [];
-  if (wantsRender && !options.coverUrl) {
+  if (wantsImages && !options.coverUrl) {
     if (!project.images) {
       project = await request(`/api-platform/v1/content/projects/${encodeURIComponent(project.projectId)}/images`, apiKey, {
         method: 'POST',
@@ -229,8 +229,8 @@ async function main() {
     generatedImages = await pollImages(project, apiKey);
   }
 
-  if (wantsRender && !project.manifest) {
-    const coverUrl = options.coverUrl || generatedImages.find(image => image.role === 'cover')?.url;
+  if (!project.manifest) {
+    const coverUrl = options.coverUrl || generatedImages.find(image => image.role === 'cover')?.url || '';
     const generatedInline = generatedImages.filter(image => image.role === 'inline').map(image => ({
       url: image.url,
       alt: image.alt || '',
@@ -241,7 +241,6 @@ async function main() {
       alt: project.article?.imageBriefs?.[index]?.alt || '',
       placement: project.article?.imageBriefs?.[index]?.placement || 'end',
     }));
-    if (!coverUrl) throw Object.assign(new Error('A cover URL or completed cover task is required'), { code: 'CONTENT_COVER_REQUIRED' });
     project = await request(`/api-platform/v1/content/projects/${encodeURIComponent(project.projectId)}/render`, apiKey, {
       method: 'POST',
       body: JSON.stringify({
