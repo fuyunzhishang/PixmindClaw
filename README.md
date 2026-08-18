@@ -16,6 +16,7 @@ clawhub install pixmind-image
 clawhub install pixmind-video
 clawhub install pixmind-image-compress
 clawhub install pixmind-video-to-prompt
+clawhub install pixmind-wechat-creator
 ```
 
 ## Configure
@@ -40,6 +41,8 @@ All skills use the production API Platform gateway with Bearer authentication:
 | Task status | `GET /api-platform/v1/tasks/{taskId}` |
 | Image compression | `POST /api-platform/v1/image/compress` |
 | Video to storyboard prompts | `POST /api-platform/v1/video-to-prompt` |
+| Create content project | `POST /api-platform/v1/content/projects` |
+| Generate article stages | `POST /api-platform/v1/content/projects/{projectId}/{outline|article|review}` |
 
 Base URL: `https://aihub-admin.aimix.pro`. Send `Authorization: Bearer $PIXMIND_API_KEY` on every request.
 
@@ -122,6 +125,16 @@ Extract ordered storyboard prompts from one remote or local video. Videos can be
 ```bash
 node skills/pixmind-video-to-prompt/scripts/video-to-prompt.js --url https://example.com/video.mp4 --yes --poll
 node skills/pixmind-video-to-prompt/scripts/video-to-prompt.js --file ./video.mp4 --language zh-cn --max-scenes 100 --yes --poll
+```
+
+### pixmind-wechat-creator — WeChat Official Account Articles
+
+Create an idempotent article project, generate and review the article, format it with Pixmind images, then copy the rich result into the WeChat editor. Proprietary prompts and model routing remain in the Pixmind backend.
+
+```bash
+node skills/pixmind-wechat-creator/scripts/wechat-creator.js --topic "用 AI 提升公众号内容生产效率" --with-images --yes
+node skills/pixmind-wechat-creator/scripts/wechat-creator.js --project-id content_xxx --yes
+node skills/pixmind-wechat-creator/scripts/wechat-creator.js --project-id content_xxx --with-images --yes
 ```
 
 ## License
