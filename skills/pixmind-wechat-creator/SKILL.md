@@ -39,7 +39,7 @@ Read the project from `result.structuredContent`. After rendering, prefer `resul
 2. Explain that outline, article, review, and optional Pixmind image generation use API credits. Obtain explicit approval before any paid call.
 3. Call `content_create_project` with a stable `clientRequestId` and a `brief` containing the collected fields. This call is not a paid generation call.
 4. Call `content_generate_outline` with `projectId`, the latest `expectedRevision`, and a stable `idempotencyKey`. Show the outline first when the user asked to approve the structure.
-5. After approval, call `content_generate_article`, then `content_review_article`. Always pass the revision returned by the preceding call and a different stable idempotency key for each operation.
+5. After approval, call `content_generate_article`, then `content_review_article`. Always pass the revision returned by the preceding call and a different stable idempotency key for each operation. If review fails but `content_get_project` confirms that `article` exists, do not retry review automatically and do not stop at Markdown: retain a visible review warning and continue to the unpaid render step with the latest revision.
 6. When images are requested, call `content_generate_images`. Poll every returned task with `pixmind_api_request` using `GET /api-platform/v1/tasks/{taskId}` until ready or failed. Never resubmit a failed or unknown paid task automatically.
 7. Always call `content_render_wechat` after the article and review are ready, even when the user did not request images. This render call is not paid. Use completed image results for `render.coverUrl` and `render.inlineAssets`; otherwise pass `coverUrl: ""` and `inlineAssets: []`. The Markdown article is an intermediate artifact, not the final copyable deliverable.
 8. Present the rendered `document.article` result only after `manifest.contentHtml` exists. Tell the user to click **Copy to WeChat editor** and paste directly into the WeChat Official Account editor; the copied HTML contains WeChat-compatible inline styles.
@@ -64,6 +64,7 @@ Do not call any `wechat_*` Tool. Preserve `projectId`, `revision`, and the idemp
 - Prefer the final render response's `result._meta.presentation` when available. Do not describe an unrendered Markdown article as ready to copy into WeChat.
 - If structured results are unavailable, expose `manifest.contentHtml` as the copyable artifact. Only fall back to the title, digest, Markdown article, image briefs, sources, review result, project ID, and revision when rendering itself failed.
 - Treat `CONTENT_OPERATION_IN_PROGRESS` as a query/resume condition, not permission to submit another request.
+- A failed or unavailable review report does not invalidate an already saved article. Query the project, preserve the review warning, and continue to `content_render_wechat`; never describe the article as reviewed.
 - Never automatically retry an unknown or failed paid generation. Call `content_get_project` first and ask before starting a genuinely new attempt.
 - If the Tool reports that Pixmind credentials are missing, tell the user to configure **Settings → Providers → Pixmind**. Never ask them to paste a key into chat.
 

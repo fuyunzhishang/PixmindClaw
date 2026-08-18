@@ -120,7 +120,10 @@ async function mutate(project, operation, requestId, apiKey) {
 
 function presentation(project) {
   const article = project.article || {};
-  const review = project.review || null;
+  const review = project.review || (project.manifest?.contentHtml ? {
+    status: 'not_available',
+    summary: '审核报告未生成，请在发布前人工核验文章内容。',
+  } : null);
   return {
     type: 'document.article',
     version: 1,
@@ -211,7 +214,15 @@ async function main() {
     return;
   }
   if (!project.article) project = await mutate(project, 'article', requestId, apiKey);
-  if (!project.review) project = await mutate(project, 'review', requestId, apiKey);
+  if (!project.review && !project.manifest && !(project.currentStep === 'review' && project.error)) {
+    try {
+      project = await mutate(project, 'review', requestId, apiKey);
+    } catch (error) {
+      project = await request(`/api-platform/v1/content/projects/${encodeURIComponent(project.projectId)}`, apiKey);
+      if (!project.article) throw error;
+      progress(`Review failed with ${error.code || 'CONTENT_REVIEW_FAILED'}; preserving the article and continuing to unpaid rendering`);
+    }
+  }
 
   const wantsImages = options.withImages === true;
   let generatedImages = [];
