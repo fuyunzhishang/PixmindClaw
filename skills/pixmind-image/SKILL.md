@@ -22,6 +22,42 @@ Generate AI images using [Pixmind](https://www.pixmind.io). Supports text-to-ima
 2. Create an API key in the [API Platform dashboard](https://www.pixmind.io/api-platform/dashboard/keys)
 3. Set env `PIXMIND_API_KEY` with your key
 
+## Required Confirmation Before Generation
+
+Treat image generation as a paid, state-changing action. Do not send a generation request until the user explicitly approves a complete configuration summary.
+
+Before generating:
+
+1. Preserve every choice the user already provided and recommend sensible values for anything missing.
+2. Check that the selected model supports the requested mode and parameters. Fetch the model catalog when current capabilities are uncertain.
+3. Present one concise summary with all relevant fields:
+   - final prompt and visual style
+   - mode (`text2img` or `img2img`) and reference image, if any
+   - model
+   - aspect ratio
+   - resolution or quality when supported
+   - image count
+   - speed and advanced controls only when relevant, such as seed, negative prompt, stylization, weirdness, or variety
+4. Ask the user to reply with an explicit approval such as `确认生成`, `按这个生成`, or `用推荐配置开始`. Let them modify any field instead.
+5. Do not run `curl`, `image-generate.js`, or any generation tool until that approval arrives. The initial image request is not approval, even if it contains every parameter.
+6. If a material field changes after approval, show the updated summary and ask for approval again.
+
+Ask for all missing choices in one turn. Offer recommended defaults and a small set of useful alternatives instead of asking one question at a time. Do not ask about controls unsupported by the selected model.
+
+Use this confirmation format:
+
+```text
+请确认生成配置：
+- 提示词：……
+- 模式：文生图
+- 模型：nano-banana-2（推荐）
+- 比例：1:1
+- 分辨率：2K
+- 数量：1 张
+
+回复“确认生成”开始，也可以直接修改任意一项。
+```
+
 ## API Details
 
 **Endpoint**: `POST https://aihub-admin.aimix.pro/api-platform/v1/generations`
@@ -181,9 +217,9 @@ Task status response:
 
 ## Guidelines
 
-1. Always confirm the prompt with the user before generating
-2. Default to `nano-banana-2` (high quality) or `seedream-4.0` unless user specifies otherwise
-3. Use `1:1` aspect ratio by default, suggest alternatives when appropriate
+1. Always complete the required configuration summary and receive explicit approval before generating
+2. Recommend `nano-banana-2` (high quality) or `seedream-4.0` unless user specifies otherwise
+3. Recommend `1:1` aspect ratio by default, suggest alternatives when appropriate
 4. If user provides a reference image, use `img2img` mode automatically
 5. After getting the task ID, poll until completion and return image URLs
 6. For image editing tasks, prefer models that support `img2img`: `nano-banana-2`, `gpt-image-2`, `gpt-image-4o`, `mj-v7`, `pixmind-2.0`, `flux-kontext-pro`, `wanx2.1-imageedit`, `qwen-image-edit-max`, `qwen-image-edit-plus`

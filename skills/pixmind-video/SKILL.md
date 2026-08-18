@@ -22,6 +22,41 @@ Generate AI videos using [Pixmind](https://www.pixmind.io). Supports text-to-vid
 2. Create an API key in the [API Platform dashboard](https://www.pixmind.io/api-platform/dashboard/keys)
 3. Set env `PIXMIND_API_KEY` with your key
 
+## Required Confirmation Before Generation
+
+Treat video generation as a paid, state-changing action. Do not send a generation request until the user explicitly approves a complete configuration summary.
+
+Before generating:
+
+1. Preserve every choice the user already provided and recommend sensible values for anything missing.
+2. Check that the selected model supports the requested mode, duration, aspect ratio, and resolution. Fetch the model catalog when current capabilities are uncertain.
+3. Present one concise summary with all relevant fields:
+   - final prompt, scene, motion, and camera direction
+   - mode (`text2video` or `img2video`) and reference image, if any
+   - model
+   - duration
+   - aspect ratio
+   - resolution when supported or required
+4. Ask the user to reply with an explicit approval such as `确认生成`, `按这个生成`, or `用推荐配置开始`. Let them modify any field instead.
+5. Do not run `curl`, `video-generate.js`, or any generation tool until that approval arrives. The initial video request is not approval, even if it contains every parameter.
+6. If a material field changes after approval, show the updated summary and ask for approval again.
+
+Ask for all missing choices in one turn. Offer recommended defaults and a small set of compatible alternatives instead of asking one question at a time. Do not show a resolution choice when the selected model does not accept one.
+
+Use this confirmation format:
+
+```text
+请确认生成配置：
+- 提示词/运镜：……
+- 模式：文生视频
+- 模型：seedance-2.0-pro（推荐）
+- 时长：5 秒
+- 比例：16:9
+- 分辨率：1080p
+
+回复“确认生成”开始，也可以直接修改任意一项。
+```
+
 ## API Details
 
 **Endpoint**: `POST https://aihub-admin.aimix.pro/api-platform/v1/generations`
@@ -172,8 +207,8 @@ Task status response:
 
 ## Guidelines
 
-1. Always confirm the prompt, duration, and model with the user before generating
-2. Default to `seedance-2.0-pro` with `resolution: 1080p` and `aspectRatio: 16:9` unless user specifies otherwise
+1. Always complete the required configuration summary and receive explicit approval before generating
+2. Recommend `seedance-2.0-pro` with `resolution: 1080p` and `aspectRatio: 16:9` unless user specifies otherwise
 3. **Seedance models** require `resolution` (`480p` / `720p` / `1080p`) — requests without it fail
 4. **Veo models** only accept `16:9` or `9:16` aspect ratios
 5. **Sora 2 models** only accept `duration` of `4`, `8`, or `12` seconds — pick one of these explicitly
