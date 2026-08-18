@@ -15,6 +15,7 @@ OpenClaw skills for AI image and video generation via [Pixmind](https://www.pixm
 clawhub install pixmind-image
 clawhub install pixmind-video
 clawhub install pixmind-image-compress
+clawhub install pixmind-video-to-prompt
 ```
 
 ## Configure
@@ -38,6 +39,7 @@ All skills use the production API Platform gateway with Bearer authentication:
 | Image/video generation | `POST /api-platform/v1/generations` |
 | Task status | `GET /api-platform/v1/tasks/{taskId}` |
 | Image compression | `POST /api-platform/v1/image/compress` |
+| Video to storyboard prompts | `POST /api-platform/v1/video-to-prompt` |
 
 Base URL: `https://aihub-admin.aimix.pro`. Send `Authorization: Bearer $PIXMIND_API_KEY` on every request.
 
@@ -111,6 +113,15 @@ Compress, resize, and convert local files or remote images:
 
 ```bash
 node skills/pixmind-image-compress/compress.js --file photo.png --preset web
+```
+
+### pixmind-video-to-prompt — Video Storyboard Extraction
+
+Extract ordered storyboard prompts from one remote or local video. Videos can be up to 10 minutes and cost 100 credits per started minute.
+
+```bash
+node skills/pixmind-video-to-prompt/scripts/video-to-prompt.js --url https://example.com/video.mp4 --yes --poll
+node skills/pixmind-video-to-prompt/scripts/video-to-prompt.js --file ./video.mp4 --language zh-cn --max-scenes 100 --yes --poll
 ```
 
 ## License

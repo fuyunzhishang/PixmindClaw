@@ -1,14 +1,15 @@
 {
   "name": "pixmind-claw-skills",
   "version": "1.0.0",
-  "description": "OpenClaw skills for Pixmind AI image and video generation",
+  "description": "OpenClaw skills for Pixmind AI image generation, video generation, analysis, and compression",
   "type": "module",
   "scripts": {
     "image": "node scripts/image-generate.js",
     "video": "node scripts/video-generate.js",
+    "video-to-prompt": "node skills/pixmind-video-to-prompt/scripts/video-to-prompt.js",
     "task-status": "node scripts/task-status.js"
   },
   "dependencies": {},
-  "keywords": ["openclaw", "skill", "pixmind", "image-generation", "video-generation"],
+  "keywords": ["openclaw", "skill", "pixmind", "image-generation", "video-generation", "video-analysis", "storyboard"],
   "license": "MIT"
 }
