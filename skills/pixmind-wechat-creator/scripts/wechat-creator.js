@@ -55,6 +55,7 @@ Options:
   --image-model <model>      Optional Pixmind image model override
   --cover-url <url>          Use an existing public HTTPS cover image
   --inline-image <url>       Repeatable existing public HTTPS inline image
+  --theme <theme>            pixmind-clean, pixmind-focus, pixmind-warm, pixmind-tech, or pixmind-magazine
   --yes                      Confirm paid content generation
 `;
 }

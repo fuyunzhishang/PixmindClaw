@@ -35,13 +35,13 @@ Read the project from `result.structuredContent`. After rendering, prefer `resul
 
 ## Workflow
 
-1. Collect the topic, target audience, goal, tone, language, target length, source URLs, and user-provided materials.
+1. Collect the topic, target audience, goal, tone, language, target length, source URLs, user-provided materials, and preferred layout theme. Offer the five themes below; if the user does not care, use `pixmind-clean`.
 2. Explain that outline, article, review, and optional Pixmind image generation use API credits. Obtain explicit approval before any paid call.
 3. Call `content_create_project` with a stable `clientRequestId` and a `brief` containing the collected fields. This call is not a paid generation call.
 4. Call `content_generate_outline` with `projectId`, the latest `expectedRevision`, and a stable `idempotencyKey`. Show the outline first when the user asked to approve the structure.
 5. After approval, call `content_generate_article`, then `content_review_article`. Always pass the revision returned by the preceding call and a different stable idempotency key for each operation. If review fails but `content_get_project` confirms that `article` exists, do not retry review automatically and do not stop at Markdown: retain a visible review warning and continue to the unpaid render step with the latest revision.
 6. When images are requested, call `content_generate_images`. Poll every returned task with `pixmind_api_request` using `GET /api-platform/v1/tasks/{taskId}` until ready or failed. Never resubmit a failed or unknown paid task automatically.
-7. Always call `content_render_wechat` after the article and review are ready, even when the user did not request images. This render call is not paid. Use completed image results for `render.coverUrl` and `render.inlineAssets`; otherwise pass `coverUrl: ""` and `inlineAssets: []`. The Markdown article is an intermediate artifact, not the final copyable deliverable.
+7. Always call `content_render_wechat` after the article and review are ready, even when the user did not request images. This render call is not paid. Use completed image results for `render.coverUrl` and `render.inlineAssets`; otherwise pass `coverUrl: ""` and `inlineAssets: []`. Pass the selected theme exactly as `render.theme`. The Markdown article is an intermediate artifact, not the final copyable deliverable.
 8. Present the rendered `document.article` result only after `manifest.contentHtml` exists. Tell the user to click **Copy to WeChat editor** and paste directly into the WeChat Official Account editor; the copied HTML contains WeChat-compatible inline styles.
 9. Do not request WeChat AppID, AppSecret, account alias, or publishing permission. This Skill does not create drafts or publish through WeChat APIs.
 
@@ -58,6 +58,16 @@ Use these MCP Tool names only:
 - `content_render_wechat`: arguments `{ projectId, expectedRevision, idempotencyKey, render }`.
 
 Do not call any `wechat_*` Tool. Preserve `projectId`, `revision`, and the idempotency keys throughout the conversation.
+
+## Layout themes
+
+- `pixmind-clean` — 简约蓝：清爽留白和左侧标题色条，适合通用内容。
+- `pixmind-focus` — 专业绿：下划线标题和克制配色，适合教程与行业分析。
+- `pixmind-warm` — 暖橙人文：圆角标题和温暖色调，适合生活、品牌与故事内容。
+- `pixmind-tech` — 科技紫：深色标题块和高对比配色，适合 AI、数码与技术文章。
+- `pixmind-magazine` — 杂志红：上下分隔线和编辑感标题，适合观点与深度报道。
+
+The user may switch themes after rendering. Call `content_render_wechat` again with the latest revision and a new stable idempotency key; this does not regenerate or review the article and is not a paid generation call.
 
 ## Output and failure handling
 
