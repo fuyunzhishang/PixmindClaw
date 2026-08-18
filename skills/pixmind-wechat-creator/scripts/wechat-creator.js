@@ -156,7 +156,7 @@ async function main() {
     return;
   }
   const apiKey = process.env.PIXMIND_API_KEY;
-  if (!apiKey) throw Object.assign(new Error('PIXMIND_API_KEY is not configured'), { code: 'MISSING_API_KEY' });
+  if (!apiKey) throw Object.assign(new Error('This external-host CLI requires PIXMIND_API_KEY in its process environment. In Pixmind Builder, use pixmind_api_request with the key saved under Settings → Providers → Pixmind instead of running this script.'), { code: 'MISSING_API_KEY' });
   if (!options.projectId && !options.topic) throw new Error('--topic or --project-id is required');
 
   const requestId = String(options.requestId || `wechat-${randomUUID()}`);

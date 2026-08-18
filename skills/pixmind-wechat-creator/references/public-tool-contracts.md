@@ -6,6 +6,24 @@ MCP Streamable HTTP endpoint: `POST /mcp`.
 
 Authenticate with `Authorization: Bearer <PIXMIND_API_KEY>`. Keep the key outside model context and chat.
 
+## Pixmind Builder secure transport
+
+Pixmind Builder exposes `pixmind_api_request`. It obtains the credential from **Settings → Providers → Pixmind**, adds the authorization header internally, and accepts only the content-engine MCP Tools listed below plus task-status reads. The Skill must not inspect operating-system environment variables or forward credentials through a shell.
+
+External hosts without this Tool may authenticate directly with `PIXMIND_API_KEY` stored in their process environment.
+
+## MCP content Tools
+
+- `content_create_project`
+- `content_get_project`
+- `content_generate_outline`
+- `content_generate_article`
+- `content_review_article`
+- `content_generate_images`
+- `content_render_wechat`
+
+The normal Skill workflow does not call any `wechat_*` Tool.
+
 ## Content endpoints used by this Skill
 
 - `POST /content/projects`: accept `clientRequestId` and `brief`; return a project at revision 1.
