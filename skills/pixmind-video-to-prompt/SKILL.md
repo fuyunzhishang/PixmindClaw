@@ -23,22 +23,39 @@ Before submitting:
 
 Use one source only. Default to `zh-cn` and 100 scenes unless the user supplied other values.
 
-Remote video:
+The launchers use an existing Node.js installation when available. Otherwise they install a
+portable, SHA-256-verified Node.js runtime in the Pixmind cache. Pixmind R2 is the primary
+source and the matching nodejs.org release is the fallback; neither path modifies the system
+`PATH`. On Windows use `run.ps1`; on macOS use `run.sh`.
 
-```bash
-node {baseDir}/scripts/video-to-prompt.js --url "https://example.com/video.mp4" --language zh-cn --max-scenes 100 --yes --poll
+Remote video on Windows:
+
+```powershell
+powershell -NoProfile -ExecutionPolicy Bypass -File "{baseDir}/scripts/run.ps1" --url "https://example.com/video.mp4" --language zh-cn --max-scenes 100 --yes --poll
 ```
 
-Local video:
+Local video on Windows:
 
-```bash
-node {baseDir}/scripts/video-to-prompt.js --file "/path/to/video.mp4" --language zh-cn --max-scenes 100 --yes --poll
+```powershell
+powershell -NoProfile -ExecutionPolicy Bypass -File "{baseDir}/scripts/run.ps1" --file "C:\path\to\video.mp4" --language zh-cn --max-scenes 100 --yes --poll
 ```
 
-Resume an existing task without resubmitting or charging again:
+Remote video on macOS:
 
 ```bash
-node {baseDir}/scripts/video-to-prompt.js --task-id 12345 --file "/path/to/original.mp4" --poll
+sh "{baseDir}/scripts/run.sh" --url "https://example.com/video.mp4" --language zh-cn --max-scenes 100 --yes --poll
+```
+
+Local video on macOS:
+
+```bash
+sh "{baseDir}/scripts/run.sh" --file "/path/to/video.mp4" --language zh-cn --max-scenes 100 --yes --poll
+```
+
+Resume an existing task without resubmitting or charging again. Use the launcher for the current platform:
+
+```bash
+sh "{baseDir}/scripts/run.sh" --task-id 12345 --file "/path/to/original.mp4" --poll
 ```
 
 Keep the original source when resuming if screenshots are required. Supplying `--task-id` never submits another paid task; `--file` or `--url` is used only for local frame extraction.
@@ -71,3 +88,5 @@ The script takes the midpoint of every returned `splits[index]`, extracts a 9:16
 - HTTP 401: configure `PIXMIND_API_KEY`; never ask the user to paste the key into chat.
 - HTTP 402: report insufficient credits and stop.
 - The API key is configured in the environment or the client's Pixmind provider settings.
+- If both portable runtime sources fail, report the launcher's official Node.js installation
+  command. Do not install a system-wide runtime without separate user approval.

@@ -22,9 +22,13 @@ const HELP = `Pixmind video-to-prompt
 Submit one video, poll the task, extract local storyboard frames, and emit a portable result.
 
 Usage:
-  node video-to-prompt.js --url <video-url> --yes --poll [options]
-  node video-to-prompt.js --file <video-path> --yes --poll [options]
-  node video-to-prompt.js --task-id <task-id> --poll [--file <video-path> | --url <video-url>] [options]
+  Windows: powershell -NoProfile -ExecutionPolicy Bypass -File run.ps1 [options]
+  macOS:   sh run.sh [options]
+
+Inputs:
+  --url <video-url> --yes --poll [options]
+  --file <video-path> --yes --poll [options]
+  --task-id <task-id> --poll [--file <video-path> | --url <video-url>] [options]
 
 Options:
   --url <url>           Remote HTTP(S) video URL
